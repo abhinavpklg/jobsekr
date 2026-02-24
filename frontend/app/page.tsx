@@ -3,6 +3,7 @@ import type { Job } from "@/lib/types";
 import Header from "@/components/Header";
 import FilterBar from "@/components/FilterBar";
 import JobList from "@/components/JobList";
+import DefaultFiltersLoader from "@/components/DefaultFiltersLoader";
 
 const PAGE_SIZE = 30;
 
@@ -86,6 +87,7 @@ export default async function HomePage({ searchParams }: PageProps) {
     <div className="min-h-screen">
       <Header />
       <FilterBar totalJobs={count} />
+      <DefaultFiltersLoader />
       <main className="mx-auto max-w-7xl px-4 py-6">
         <JobList
           jobs={jobs}

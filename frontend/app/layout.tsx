@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { JobActionsProvider } from "@/components/JobActionsProvider";
 import "./globals.css";
 
@@ -24,10 +25,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${inter.className} bg-[#0d1117] text-gray-200 min-h-screen antialiased`}
-      >
-        <JobActionsProvider>{children}</JobActionsProvider>
+      <body className={`${inter.className} min-h-screen antialiased`}>
+        <ThemeProvider>
+          <JobActionsProvider>{children}</JobActionsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

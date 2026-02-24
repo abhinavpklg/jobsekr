@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useJobActionsContext } from "@/components/JobActionsProvider";
+import { useTheme } from "@/components/ThemeProvider";
 import { createSupabaseBrowser } from "@/lib/supabase-browser";
 
 export default function Header() {
   const { user, loading, counts } = useJobActionsContext();
+  const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const supabase = createSupabaseBrowser();
 
@@ -17,34 +19,34 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-800 bg-[#0d1117]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0d1117]/80">
+    <header className="sticky top-0 z-50 border-b border-border bg-bg-primary/95 backdrop-blur supports-[backdrop-filter]:bg-bg-primary/80">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link
             href="/"
-            className="text-lg font-bold tracking-tight text-white hover:text-accent transition-colors"
+            className="text-lg font-bold tracking-tight text-t-primary hover:text-accent transition-colors"
           >
             Jobsekr
           </Link>
           <nav className="hidden sm:flex items-center gap-4">
             <Link
               href="/"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-t-secondary hover:text-t-primary transition-colors"
             >
               Jobs
             </Link>
             {user && (
               <Link
                 href="/dashboard"
-                className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                className="flex items-center gap-2 text-sm text-t-secondary hover:text-t-primary transition-colors"
               >
                 Dashboard
                 {counts.total > 0 && (
                   <span className="flex items-center gap-1.5 text-xs">
-                    <span className="rounded-full bg-accent/20 px-1.5 py-0.5 text-accent">
+                    <span className="rounded-full bg-accent-muted px-1.5 py-0.5 text-accent">
                       {counts.saved}
                     </span>
-                    <span className="rounded-full bg-green-bright/20 px-1.5 py-0.5 text-green-bright">
+                    <span className="rounded-full bg-green-muted px-1.5 py-0.5 text-green-bright">
                       {counts.applied}
                     </span>
                   </span>
@@ -55,16 +57,36 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="rounded-md p-2 text-t-muted hover:text-t-primary hover:bg-surface transition-colors"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? (
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            ) : (
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            )}
+          </button>
+
           {loading ? (
             <div className="h-8 w-20 animate-pulse rounded bg-surface" />
           ) : user ? (
             <div className="flex items-center gap-3">
-              <span className="hidden sm:inline text-sm text-gray-400">
+              <Link
+                href="/profile"
+                className="hidden sm:inline text-sm text-t-secondary hover:text-t-primary transition-colors"
+              >
                 {user.email}
-              </span>
+              </Link>
               <button
                 onClick={handleSignOut}
-                className="rounded-md border border-gray-700 px-3 py-1.5 text-sm text-gray-300 hover:border-gray-500 hover:text-white transition-colors"
+                className="rounded-md border border-border px-3 py-1.5 text-sm text-t-secondary hover:border-border-hover hover:text-t-primary transition-colors"
               >
                 Sign out
               </button>
@@ -72,7 +94,7 @@ export default function Header() {
           ) : (
             <Link
               href="/auth/login"
-              className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-white hover:bg-accent/90 transition-colors"
+              className="rounded-md bg-accent px-3 py-1.5 text-sm font-medium text-t-inverse hover:bg-accent-hover transition-colors"
             >
               Sign in
             </Link>

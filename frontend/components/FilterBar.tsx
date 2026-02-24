@@ -23,8 +23,7 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
       } else {
         params.delete(key);
       }
-      // Reset to page 1 when filters change
-      params.delete("cursor");
+      params.delete("page");
 
       startTransition(() => {
         router.push(`/?${params.toString()}`);
@@ -45,15 +44,18 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
     }
   };
 
+  const selectClass =
+    "rounded-md border border-border bg-surface px-3 py-2 text-sm text-t-secondary focus:border-accent focus:outline-none";
+
   return (
-    <div className="sticky top-14 z-40 border-b border-gray-800 bg-[#0d1117]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0d1117]/80">
+    <div className="sticky top-14 z-40 border-b border-border bg-bg-primary/95 backdrop-blur supports-[backdrop-filter]:bg-bg-primary/80">
       <div className="mx-auto max-w-7xl px-4 py-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {/* Search */}
           <form onSubmit={handleSearch} className="flex-1">
             <div className="relative">
               <svg
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
+                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-t-muted"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -71,7 +73,7 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search jobs... (e.g. react, python, senior engineer)"
-                className="w-full rounded-md border border-gray-700 bg-surface py-2 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-md border border-border bg-surface py-2 pl-10 pr-4 text-sm text-t-primary placeholder-t-muted focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
           </form>
@@ -81,7 +83,7 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
             <select
               value={searchParams.get("remote") || ""}
               onChange={(e) => updateFilters("remote", e.target.value)}
-              className="rounded-md border border-gray-700 bg-surface px-3 py-2 text-sm text-gray-300 focus:border-accent focus:outline-none"
+              className={selectClass}
             >
               {REMOTE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -93,7 +95,7 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
             <select
               value={searchParams.get("ats") || ""}
               onChange={(e) => updateFilters("ats", e.target.value)}
-              className="rounded-md border border-gray-700 bg-surface px-3 py-2 text-sm text-gray-300 focus:border-accent focus:outline-none"
+              className={selectClass}
             >
               {ATS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -105,7 +107,7 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
             <select
               value={searchParams.get("location") || ""}
               onChange={(e) => updateFilters("location", e.target.value)}
-              className="rounded-md border border-gray-700 bg-surface px-3 py-2 text-sm text-gray-300 focus:border-accent focus:outline-none"
+              className={selectClass}
             >
               {LOCATION_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -117,7 +119,7 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
             <select
               value={searchParams.get("sort") || "recent"}
               onChange={(e) => updateFilters("sort", e.target.value)}
-              className="rounded-md border border-gray-700 bg-surface px-3 py-2 text-sm text-gray-300 focus:border-accent focus:outline-none"
+              className={selectClass}
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -126,12 +128,8 @@ export default function FilterBar({ totalJobs }: FilterBarProps) {
               ))}
             </select>
 
-            <span className="ml-auto text-xs text-gray-500 whitespace-nowrap">
-              {isPending ? (
-                "Loading..."
-              ) : (
-                <>{totalJobs.toLocaleString()} jobs</>
-              )}
+            <span className="ml-auto text-xs text-t-muted whitespace-nowrap">
+              {isPending ? "Loading..." : <>{totalJobs.toLocaleString()} jobs</>}
             </span>
           </div>
         </div>

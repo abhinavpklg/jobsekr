@@ -79,12 +79,12 @@ export function atsDisplayName(ats: string): string {
 export function remoteTypeClasses(type: string): string {
   switch (type) {
     case "remote":
-      return "bg-red-500/20 text-red-400";
+      return "bg-red-muted text-red-bright";
     case "hybrid":
-      return "bg-yellow-500/20 text-yellow-400";
+      return "bg-yellow-muted text-yellow-bright";
     case "onsite":
-      return "bg-blue-500/20 text-blue-400";
+      return "bg-accent-muted text-accent";
     default:
-      return "bg-gray-500/20 text-gray-400";
+      return "bg-surface text-t-muted";
   }
 }
