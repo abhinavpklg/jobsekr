@@ -102,3 +102,61 @@ body {
   --tw-ring-color: var(--accent);
   --tw-ring-offset-color: var(--bg-primary);
 }
+
+/* Job description HTML styling */
+.prose-custom h1,
+.prose-custom h2,
+.prose-custom h3,
+.prose-custom h4 {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+.prose-custom h1 { font-size: 1.25rem; }
+.prose-custom h2 { font-size: 1.125rem; }
+.prose-custom h3 { font-size: 1rem; }
+
+.prose-custom p {
+  margin-bottom: 0.75em;
+}
+
+.prose-custom ul,
+.prose-custom ol {
+  padding-left: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.prose-custom ul { list-style-type: disc; }
+.prose-custom ol { list-style-type: decimal; }
+
+.prose-custom li {
+  margin-bottom: 0.25em;
+}
+
+.prose-custom a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.prose-custom a:hover {
+  color: var(--accent-hover);
+}
+
+.prose-custom strong,
+.prose-custom b {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.prose-custom table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+.prose-custom th,
+.prose-custom td {
+  border: 1px solid var(--border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}

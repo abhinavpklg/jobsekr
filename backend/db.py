@@ -332,21 +332,132 @@ def upsert_job(
             return (None, False)
 
 
-def bulk_upsert_jobs(jobs: list[dict[str, Any]]) -> tuple[int, int]:
+def batch_insert_jobs(jobs: list[dict[str, Any]], batch_size: int = 500) -> tuple[int, int]:
     """
-    Upsert a batch of jobs. Each dict must have at minimum:
-    url, title, ats_source.
-    Returns (new_count, updated_count).
+    Batch insert jobs, skipping duplicates via url_hash unique constraint.
+    Much faster than individual upserts — one request per batch.
+    Returns (new_count, skipped_count).
     """
-    new_count = 0
-    updated_count = 0
+    if not jobs:
+        return 0, 0
+
+    # Pre-compute url_hashes
     for job in jobs:
-        _, is_new = upsert_job(**job)
-        if is_new:
-            new_count += 1
-        else:
-            updated_count += 1
-    return new_count, updated_count
+        if "url_hash" not in job:
+            job["url_hash"] = hash_url(job["url"])
+
+    # Fetch existing hashes in one query
+    hashes = [j["url_hash"] for j in jobs]
+    existing_hashes: set[str] = set()
+
+    # Query in batches of 1000 (Supabase .in() limit)
+    for i in range(0, len(hashes), 1000):
+        chunk = hashes[i:i + 1000]
+        try:
+            result = _retry(lambda c=chunk: (
+                get_client()
+                .table("jobs")
+                .select("url_hash")
+                .in_("url_hash", c)
+                .execute()
+            ))
+            if result.data:
+                existing_hashes.update(r["url_hash"] for r in result.data)
+        except Exception as e:
+            logger.error("Failed to check existing hashes: %s", e)
+
+    # Filter to only new jobs
+    new_jobs = [j for j in jobs if j["url_hash"] not in existing_hashes]
+
+    if not new_jobs:
+        return 0, len(jobs)
+
+    # Update last_seen for existing jobs in one batch
+    existing_jobs = [j for j in jobs if j["url_hash"] in existing_hashes]
+    if existing_jobs:
+        now = datetime.now(timezone.utc).isoformat()
+        existing_job_hashes = [j["url_hash"] for j in existing_jobs]
+        for i in range(0, len(existing_job_hashes), 1000):
+            chunk = existing_job_hashes[i:i + 1000]
+            try:
+                _retry(lambda c=chunk: (
+                    get_client()
+                    .table("jobs")
+                    .update({"last_seen": now, "is_active": True})
+                    .in_("url_hash", c)
+                    .execute()
+                ))
+            except Exception as e:
+                logger.warning("Failed to update last_seen batch: %s", e)
+
+    # Insert new jobs in batches
+    new_count = 0
+    now = datetime.now(timezone.utc).isoformat()
+
+    for i in range(0, len(new_jobs), batch_size):
+        batch = new_jobs[i:i + batch_size]
+        rows = []
+        for job in batch:
+            row: dict[str, Any] = {
+                "url_hash": job["url_hash"],
+                "url": job["url"].strip(),
+                "title": job["title"].strip(),
+                "ats_source": job.get("ats_source", "unknown").lower().strip(),
+                "first_seen": now,
+                "last_seen": now,
+                "is_active": True,
+            }
+            if job.get("company_name"):
+                row["company_name"] = job["company_name"].strip()
+            if job.get("company_id"):
+                row["company_id"] = job["company_id"]
+            if job.get("location"):
+                row["location"] = job["location"].strip()
+            if job.get("description"):
+                row["description"] = job["description"][:500].strip()
+            if job.get("salary_min") is not None:
+                row["salary_min"] = job["salary_min"]
+            if job.get("salary_max") is not None:
+                row["salary_max"] = job["salary_max"]
+            if job.get("remote_type") and job["remote_type"] in ("remote", "onsite", "hybrid", "unknown"):
+                row["remote_type"] = job["remote_type"]
+            if job.get("seniority"):
+                row["seniority"] = job["seniority"]
+            if job.get("category"):
+                row["category"] = job["category"]
+            if job.get("tags"):
+                row["tags"] = job["tags"]
+            if job.get("posted_at"):
+                row["posted_at"] = job["posted_at"]
+            if job.get("raw_data"):
+                row["raw_data"] = job["raw_data"]
+            rows.append(row)
+
+        try:
+            result = _retry(lambda r=rows: (
+                get_client()
+                .table("jobs")
+                .insert(r)
+                .execute()
+            ))
+            new_count += len(result.data) if result.data else 0
+        except Exception as e:
+            # If batch fails (e.g. duplicate), fall back to one-by-one
+            logger.warning("Batch insert failed, falling back to individual: %s", e)
+            for row in rows:
+                try:
+                    _retry(lambda r=row: (
+                        get_client()
+                        .table("jobs")
+                        .insert(r)
+                        .execute()
+                    ))
+                    new_count += 1
+                except Exception:
+                    pass
+
+    logger.info("Batch insert: %d new, %d existing (updated last_seen)", new_count, len(existing_jobs))
+    return new_count, len(existing_jobs)
 
 
 def mark_stale_jobs(ats_source: str, active_url_hashes: set[str]) -> int:
