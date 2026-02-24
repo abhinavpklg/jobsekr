@@ -37,10 +37,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protect /dashboard and /profile routes
+  // Protect /dashboard, /profile, /analytics routes
   if (
     (request.nextUrl.pathname.startsWith("/dashboard") ||
-      request.nextUrl.pathname.startsWith("/profile")) &&
+      request.nextUrl.pathname.startsWith("/profile") ||
+      request.nextUrl.pathname.startsWith("/analytics")) &&
     !user
   ) {
     const loginUrl = new URL("/auth/login", request.url);

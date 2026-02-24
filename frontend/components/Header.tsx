@@ -53,6 +53,14 @@ export default function Header() {
                 )}
               </Link>
             )}
+            {user && (
+              <Link
+                href="/analytics"
+                className="text-sm text-t-secondary hover:text-t-primary transition-colors"
+              >
+                Analytics
+              </Link>
+            )}
           </nav>
         </div>
 

@@ -51,7 +51,7 @@ export interface UserJobState {
   id: string;
   user_id: string;
   job_id: string;
-  status: "saved" | "applied" | "hidden" | "interviewed" | "rejected" | "offered";
+  status: "saved" | "applied" | "screening" | "interviewing" | "offered" | "rejected" | "archived" | "hidden";
   notes: string | null;
   applied_at: string | null;
   created_at: string;
@@ -161,3 +161,15 @@ export const SORT_OPTIONS = [
   { value: "recent", label: "Newest first" },
   { value: "oldest", label: "Oldest first" },
 ] as const;
+
+// Application pipeline statuses (order matters for funnel)
+export const PIPELINE_STATUSES = [
+  { value: "applied", label: "Applied", color: "var(--accent)" },
+  { value: "screening", label: "Screening", color: "var(--yellow)" },
+  { value: "interviewing", label: "Interviewing", color: "var(--purple)" },
+  { value: "offered", label: "Offered", color: "var(--green)" },
+  { value: "rejected", label: "Rejected", color: "var(--red)" },
+  { value: "archived", label: "Archived", color: "var(--text-muted)" },
+] as const;
+
+export type PipelineStatus = typeof PIPELINE_STATUSES[number]["value"];
