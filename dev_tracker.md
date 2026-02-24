@@ -1,8 +1,9 @@
-# SYKR — Development Tracker
+# Jobsekr — Development Tracker
 
 **Started:** Feb 24, 2026
 **Target MVP:** Mar 2, 2026
 **Status:** 🟢 In Progress
+**Live URL:** https://jobsekr.app
 
 ---
 
@@ -12,20 +13,22 @@
 - [x] Create Supabase project
 - [x] Run schema migration (all tables + indexes + RLS policies)
 - [x] Verify tables in Supabase dashboard
-- [ ] Scaffold Next.js 14 app (App Router, Tailwind, TypeScript)
-- [ ] Install dependencies: `@supabase/supabase-js`, `@supabase/ssr`
-- [ ] Create Supabase client helpers (`lib/supabase-server.ts`, `lib/supabase-browser.ts`)
-- [ ] Implement Auth: login page (email + Google OAuth)
-- [ ] Implement Auth: signup, callback route, session middleware
-- [ ] Protected route test: `/dashboard` redirects to `/auth/login` if not logged in
-- [ ] Deploy to Vercel (connect GitHub repo)
-- [ ] Set environment variables on Vercel
-- [ ] **Checkpoint:** Can sign up, log in, see empty dashboard, deployed on Vercel
+- [x] Scaffold Next.js 14 app (App Router, Tailwind, TypeScript)
+- [x] Install dependencies: `@supabase/supabase-js`, `@supabase/ssr`
+- [x] Create Supabase client helpers (`lib/supabase-server.ts`, `lib/supabase-browser.ts`)
+- [x] Implement Auth: login page (email + Google OAuth)
+- [x] Implement Auth: signup, callback route, session middleware
+- [x] Protected route test: `/dashboard` redirects to `/auth/login` if not logged in
+- [x] Deploy to Vercel (connect GitHub repo)
+- [x] Set environment variables on Vercel
+- [x] **Checkpoint:** Can sign up, log in, see empty dashboard, deployed on Vercel ✅
 
 **Notes:**
 ```
 Schema migration complete with all 6 tables, RLS policies, auto-profile trigger,
 and updated_at triggers. Added extra indexes beyond PRD spec.
+Domain jobsekr.app purchased and configured on name.com → Vercel.
+Google OAuth configured via Google Cloud Console.
 ```
 
 ---
@@ -33,7 +36,7 @@ and updated_at triggers. Added extra indexes beyond PRD spec.
 ## Day 2 — Data Pipeline
 > Goal: Companies in DB, first real scrape completed, Railway cron running
 
-- [x] ~~Set up Railway project, connect GitHub repo~~ (deferred to after frontend)
+- [x] ~~Set up Railway project, connect GitHub repo~~ (deferred)
 - [x] Create `backend/config.py` (env vars, constants)
 - [x] Create `backend/db.py` (Supabase Python client wrapper)
 - [x] Port `discover_companies.py` → write to Supabase companies table
@@ -57,7 +60,7 @@ and updated_at triggers. Added extra indexes beyond PRD spec.
 - [x] Run discovery: seed 100+ companies from probe list
 - [x] Run first scrape: verify jobs appear in Supabase jobs table
 - [ ] Set up Railway cron: discovery 1x/day, scraper 3x/day
-- [x] **Checkpoint:** >1000 jobs in DB from >100 companies, cron pending
+- [x] **Checkpoint:** >1000 jobs in DB from >100 companies, cron pending ✅
 
 **Notes:**
 ```
@@ -77,43 +80,55 @@ cleanup.py still needed. Railway cron setup deferred.
 ## Day 3 — Job Listing Page
 > Goal: Users can browse and search jobs on the live site
 
-- [ ] Create `types.ts` (Job, Company, UserJobState types from schema)
-- [ ] Build `components/Header.tsx` (logo, nav, auth state)
-- [ ] Build `components/JobCard.tsx` (port design from local dashboard)
-- [ ] Build `components/FilterBar.tsx` (search, remote, ATS, location, sort)
-- [ ] Build `app/page.tsx` or `app/jobs/page.tsx` (Server Component, fetch jobs)
-- [ ] Implement Supabase query with filters (text search, remote_type, ats_source, etc.)
-- [ ] Implement pagination (cursor-based using `first_seen`)
-- [ ] URL-based filter state (`/jobs?q=react&remote=true` → shareable)
-- [ ] Loading skeleton while fetching
-- [ ] Empty state ("No jobs match your filters")
-- [ ] Deploy and test with real data
-- [ ] **Checkpoint:** Can search, filter, sort, paginate jobs on live site
+- [x] Create `types.ts` (Job, Company, UserJobState types from schema)
+- [x] Build `components/Header.tsx` (logo, nav, auth state)
+- [x] Build `components/JobCard.tsx` (port design from local dashboard)
+- [x] Build `components/FilterBar.tsx` (search, remote, ATS, location, sort)
+- [x] Build `app/page.tsx` (Server Component, fetch jobs)
+- [x] Implement Supabase query with filters (text search, remote_type, ats_source, location)
+- [x] Implement pagination (offset-based with page numbers)
+- [x] URL-based filter state (`/?q=react&remote=remote&page=2` → shareable)
+- [x] Empty state ("No jobs match your filters")
+- [x] Deploy and test with real data
+- [x] **Checkpoint:** Can search, filter, sort, paginate jobs on live site ✅
 
 **Notes:**
 ```
+Added location filter beyond PRD spec (dropdown with common presets, ilike match).
+Switched from cursor-based to offset pagination with page numbers per user request.
 ```
 
 ---
 
-## Day 4 — Application Tracking
-> Goal: Logged-in users can save/apply/hide jobs, see their dashboard
+## Day 4 — Application Tracking + Profile
+> Goal: Logged-in users can save/apply/hide jobs, see their dashboard, manage preferences
 
-- [ ] Auth middleware: protect `/dashboard` route
-- [ ] Build card action buttons: Save, Applied, Hide (Client Components)
-- [ ] Build `components/AppliedOverlay.tsx` (blue tint → "Applied?" → Yes/No → green)
-- [ ] Wire up Supabase mutations for `user_job_state` table
-- [ ] Build `app/dashboard/page.tsx`:
-  - [ ] Tabs: Saved / Applied / Hidden / All
-  - [ ] Same JobCard component, filtered by user state
-  - [ ] Counts in tab labels
-- [ ] Header counters: Viewed / Applied / Hidden (live updating)
-- [ ] Clicking card body → opens URL + shows overlay (port existing behavior)
-- [ ] Deploy and test full auth + tracking flow
-- [ ] **Checkpoint:** Full save/apply/hide flow works, persists across sessions
+- [x] Auth middleware: protect `/dashboard` and `/profile` routes
+- [x] Build card action buttons: Save, Applied, Hide (Client Components)
+- [x] Build "Applied?" overlay (click card → open URL → "Did you apply?" → Yes/No → green flash)
+- [x] Wire up Supabase mutations for `user_job_state` table
+- [x] Build `app/dashboard/page.tsx`:
+  - [x] Tabs: Saved / Applied / Hidden / All
+  - [x] Same JobCard component, filtered by user state
+  - [x] Counts in tab labels
+- [x] Header counters: saved/applied counts in dashboard link
+- [x] Clicking card body → opens URL + shows overlay
+- [x] Build light/dark theme system (CSS variables, ThemeProvider, toggle in header)
+- [x] Build `/profile` page:
+  - [x] Display name editing
+  - [x] Activity stats (saved/applied/hidden counts)
+  - [x] Theme picker (dark/light)
+  - [x] Default filter configuration (query, remote, ATS, location, sort)
+- [x] Auto-apply default filters on homepage for logged-in users
+- [x] Deploy and test full auth + tracking + profile flow
+- [x] **Checkpoint:** Full save/apply/hide flow works, profile preferences persist ✅
 
 **Notes:**
 ```
+JobActionsProvider context shares state across all components.
+useJobActions hook handles all Supabase mutations for user_job_state.
+DefaultFiltersLoader component auto-applies saved preferences on homepage visit.
+Rebranded from SYKR to Jobsekr. Domain: jobsekr.app.
 ```
 
 ---
@@ -122,9 +137,8 @@ cleanup.py still needed. Railway cron setup deferred.
 > Goal: More job coverage, better UX, production-ready
 
 - [x] Add ATS parsers (done early — 14 total, moved to Day 2)
-- [ ] Run discovery again with new parsers active
 - [ ] Build `backend/cleanup.py` (delete >90 day data, mark stale jobs inactive)
-- [ ] Add cleanup to Railway cron (1x/day)
+- [ ] Set up Railway cron: discovery 1x/day, scraper 3x/day, cleanup 1x/day
 - [ ] Frontend polish:
   - [ ] Loading states on all async operations
   - [ ] Error boundaries with retry buttons
@@ -133,11 +147,10 @@ cleanup.py still needed. Railway cron setup deferred.
   - [ ] Keyboard navigation (Enter to search, Escape to close overlays)
 - [ ] SEO: page titles, meta descriptions, OG tags
 - [ ] Favicon and basic branding
-- [ ] **Checkpoint:** 5+ ATS live, polished UI, no console errors
+- [ ] **Checkpoint:** Polished UI, crons running, no console errors
 
 **Notes:**
 ```
-14 ATS parsers already built on Day 2. Remaining: cleanup.py, Railway cron, frontend polish.
 ```
 
 ---
@@ -158,7 +171,6 @@ cleanup.py still needed. Railway cron setup deferred.
   - [ ] Dashboard loads <1s
   - [ ] Check Supabase query plans, add indexes if slow
 - [ ] Verify Railway crons ran successfully (check scrape_runs table)
-- [ ] Set up custom domain (if purchased) on Vercel
 - [ ] Error monitoring: check Vercel function logs, Supabase logs
 - [ ] **Checkpoint:** All tests pass, production stable, crons verified
 
@@ -213,6 +225,9 @@ cleanup.py still needed. Railway cron setup deferred.
 | 1 | Supabase HTTP/2 connection drop after ~10k requests | Fixed | Day 2 — added retry + client reset in db.py |
 | 2 | Parser __pycache__ stale module cache | Fixed | Day 2 — cleared pycache |
 | 3 | YC Work at a Startup returns 0 (JS-rendered) | Known | Deferred — not worth headless browser for MVP |
+| 4 | ESLint unused vars in dashboard/profile | Fixed | Day 4 — removed unused imports |
+| 5 | useSearchParams needs Suspense boundary | Fixed | Day 4 — wrapped login page in Suspense |
+| 6 | suppressHydrationMismatch not valid on html element | Fixed | Day 4 — removed prop |
 
 ---
 
@@ -225,3 +240,7 @@ cleanup.py still needed. Railway cron setup deferred.
 | Feb 24 | Skip YC scraping for MVP | JS-rendered page, no public JSON API, GitHub repos provide similar coverage |
 | Feb 24 | Added checkpoint resume to scraper | First run hit HTTP/2 connection limit, needed crash recovery |
 | Feb 24 | Keep ATS templates in config.py, not DB | Only used at discovery time, 14 platforms rarely change, simpler for MVP |
+| Feb 24 | Offset pagination instead of cursor-based | User requested page numbers instead of "Load more" |
+| Feb 24 | Rebranded from SYKR to Jobsekr | Domain jobsekr.app purchased |
+| Feb 24 | CSS variables for theming instead of Tailwind dark: prefix | Cleaner, supports runtime theme switching without class duplication |
+| Feb 24 | User preferences stored in user_profiles.preferences JSONB | No extra table needed, flexible schema for future settings |
