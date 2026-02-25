@@ -390,7 +390,7 @@ def batch_insert_jobs(jobs: list[dict[str, Any]], batch_size: int = 500) -> tupl
             except Exception as e:
                 logger.warning("Failed to update last_seen batch: %s", e)
 
-    # Insert new jobs in batches
+    # Insert new jobs in batches using upsert to handle any remaining dupes
     new_count = 0
     now = datetime.now(timezone.utc).isoformat()
 
@@ -437,24 +437,12 @@ def batch_insert_jobs(jobs: list[dict[str, Any]], batch_size: int = 500) -> tupl
             result = _retry(lambda r=rows: (
                 get_client()
                 .table("jobs")
-                .insert(r)
+                .upsert(r, on_conflict="url_hash", ignore_duplicates=True)
                 .execute()
             ))
             new_count += len(result.data) if result.data else 0
         except Exception as e:
-            # If batch fails (e.g. duplicate), fall back to one-by-one
-            logger.warning("Batch insert failed, falling back to individual: %s", e)
-            for row in rows:
-                try:
-                    _retry(lambda r=row: (
-                        get_client()
-                        .table("jobs")
-                        .insert(r)
-                        .execute()
-                    ))
-                    new_count += 1
-                except Exception:
-                    pass
+            logger.error("Batch upsert failed: %s", e)
 
     logger.info("Batch insert: %d new, %d existing (updated last_seen)", new_count, len(existing_jobs))
     return new_count, len(existing_jobs)
