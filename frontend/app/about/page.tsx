@@ -16,7 +16,7 @@ export default function AboutPage() {
 
           <h2 className="text-lg font-semibold text-t-primary pt-4">How it works</h2>
           <p>
-            Our scrapers run multiple times a day, pulling job postings from hundreds of
+            We pull data from the web multiple times a day, collecting job postings from hundreds of
             companies across various career platforms. Everything is deduplicated and
             presented in one clean, searchable feed.
           </p>
@@ -25,7 +25,7 @@ export default function AboutPage() {
           <div className="space-y-3">
             <div className="flex gap-3">
               <span className="text-accent font-bold">→</span>
-              <p><strong className="text-t-primary">Freshness:</strong> Jobs appear within hours of posting, not days. We scrape career pages directly.</p>
+              <p><strong className="text-t-primary">Freshness:</strong> Jobs appear within hours of posting, not days. We pull data from career pages directly.</p>
             </div>
             <div className="flex gap-3">
               <span className="text-accent font-bold">→</span>
@@ -46,7 +46,7 @@ export default function AboutPage() {
           <div className="space-y-4">
             <div>
               <p className="font-medium text-t-primary">How fresh is the data?</p>
-              <p>Jobs are scraped multiple times daily. Most postings appear within a few hours of being published.</p>
+              <p>Jobs are pulled from the web multiple times daily. Most postings appear within a few hours of being published.</p>
             </div>
             <div>
               <p className="font-medium text-t-primary">Is it really free?</p>
@@ -68,16 +68,7 @@ export default function AboutPage() {
 
           <div className="pt-6 border-t border-border">
             <p className="text-t-muted">
-              Built by{" "}
-              <a
-                href="https://www.linkedin.com/in/abnav/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                Abhinav
-              </a>
-              . Open source on{" "}
+              Open source on{" "}
               <a
                 href="https://github.com/abhinavpklg/jobsekr"
                 target="_blank"

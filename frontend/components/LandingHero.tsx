@@ -69,7 +69,7 @@ export default function LandingHero({ stats }: LandingHeroProps) {
           <FeatureCard
             icon="⚡"
             title="Fresh postings"
-            description="Jobs scraped directly from company career pages. See new postings within hours of going live."
+            description="Jobs pulled directly from company career pages. See new postings within hours of going live."
           />
           <FeatureCard
             icon="🔍"

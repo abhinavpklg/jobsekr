@@ -25,16 +25,7 @@ export default function Footer() {
           </div>
 
           <p className="text-xs text-t-muted">
-            Built by{" "}
-            <a
-              href="https://www.linkedin.com/in/abnav/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-accent hover:underline"
-            >
-              Abhinav
-            </a>{" "}
-            · © {new Date().getFullYear()} Jobsekr
+            © {new Date().getFullYear()} Jobsekr
           </p>
         </div>
       </div>

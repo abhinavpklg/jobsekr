@@ -136,7 +136,7 @@ export default function ContactPage() {
                 required
                 rows={5}
                 className={inputClass}
-                placeholder="Tell us what's on your mind..."
+                placeholder="Tell us what is on your mind..."
               />
             </div>
 
@@ -167,14 +167,6 @@ export default function ContactPage() {
               className="flex items-center gap-2 text-sm text-t-secondary hover:text-accent transition-colors"
             >
               <span>🐛</span> Report a bug on GitHub
-            </a>
-            <a
-              href="https://www.linkedin.com/in/abnav/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-t-secondary hover:text-accent transition-colors"
-            >
-              <span>💼</span> Connect on LinkedIn
             </a>
           </div>
         </div>
