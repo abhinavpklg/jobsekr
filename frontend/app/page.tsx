@@ -29,6 +29,7 @@ async function fetchJobs(
     .select("*", { count: "exact" })
     .eq("is_active", true);
 
+  // Text search
   if (params.q) {
     query = query.textSearch("title", params.q, {
       type: "websearch",
@@ -36,18 +37,36 @@ async function fetchJobs(
     });
   }
 
+  // Remote filter
   if (params.remote) {
     query = query.eq("remote_type", params.remote);
   }
 
+  // ATS filter
   if (params.ats) {
     query = query.eq("ats_source", params.ats);
   }
 
+  // Location filter
   if (params.location) {
     query = query.ilike("location", `%${params.location}%`);
   }
 
+  // Time range filter
+  if (params.days) {
+    const days = parseInt(params.days, 10);
+    if (days > 0) {
+      const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+      query = query.or(`posted_at.gte.${cutoff},and(posted_at.is.null,first_seen.gte.${cutoff})`);
+    }
+  }
+
+  // Sort newest first
+  query = query
+    .order("posted_at", { ascending: false, nullsFirst: false })
+    .order("first_seen", { ascending: false });
+
+  // Pagination
   const page = Math.max(1, parseInt(params.page || "1", 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
