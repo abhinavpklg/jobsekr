@@ -122,8 +122,12 @@ def _extract_salary(raw: dict[str, Any]) -> tuple[int | None, int | None, str]:
     sal_max = salary_range.get("max")
     currency = salary_range.get("currency", "USD") or "USD"
 
-    return (
-        int(sal_min) if sal_min else None,
-        int(sal_max) if sal_max else None,
-        currency,
-    )
+    def safe_int(v: Any) -> int | None:
+        if v is None or v == "":
+            return None
+        try:
+            return int(float(v))
+        except (ValueError, TypeError):
+            return None
+
+    return safe_int(sal_min), safe_int(sal_max), currency

@@ -182,7 +182,7 @@ async def run_scraper(
         companies_with_jobs += 1
         company_info = company_map.get(company_id, {})
         company_name = company_info.get("name")
-        ats_source = company_info.get("ats", "unknown")
+        ats_source = company_info.get("ats") or "unknown"
 
         for job in parsed_jobs:
             all_jobs.append({

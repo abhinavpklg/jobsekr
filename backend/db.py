@@ -350,9 +350,9 @@ def batch_insert_jobs(jobs: list[dict[str, Any]], batch_size: int = 500) -> tupl
     hashes = [j["url_hash"] for j in jobs]
     existing_hashes: set[str] = set()
 
-    # Query in batches of 1000 (Supabase .in() limit)
-    for i in range(0, len(hashes), 1000):
-        chunk = hashes[i:i + 1000]
+    # Query in smaller batches to avoid URL length limits
+    for i in range(0, len(hashes), 200):
+        chunk = hashes[i:i + 200]
         try:
             result = _retry(lambda c=chunk: (
                 get_client()
@@ -377,8 +377,8 @@ def batch_insert_jobs(jobs: list[dict[str, Any]], batch_size: int = 500) -> tupl
     if existing_jobs:
         now = datetime.now(timezone.utc).isoformat()
         existing_job_hashes = [j["url_hash"] for j in existing_jobs]
-        for i in range(0, len(existing_job_hashes), 1000):
-            chunk = existing_job_hashes[i:i + 1000]
+        for i in range(0, len(existing_job_hashes), 200):
+            chunk = existing_job_hashes[i:i + 200]
             try:
                 _retry(lambda c=chunk: (
                     get_client()
@@ -412,7 +412,13 @@ def batch_insert_jobs(jobs: list[dict[str, Any]], batch_size: int = 500) -> tupl
             if job.get("company_id"):
                 row["company_id"] = job["company_id"]
             if job.get("location"):
-                row["location"] = job["location"].strip()
+                loc = job["location"]
+                if isinstance(loc, str):
+                    row["location"] = loc.strip()
+                elif isinstance(loc, dict):
+                    row["location"] = loc.get("name", str(loc)).strip()
+                else:
+                    row["location"] = str(loc).strip()
             if job.get("description"):
                 row["description"] = job["description"][:500].strip()
             if job.get("salary_min") is not None:
