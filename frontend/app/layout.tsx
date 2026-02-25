@@ -8,13 +8,13 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Jobsekr — Every new tech job, within hours",
+  title: "Jobsekr - Every new job posting, in one place",
   description:
-    "Job aggregation platform for US-based tech professionals. Fresh jobs from 14+ ATS platforms, updated multiple times daily.",
+    "Job aggregation platform that brings fresh postings from hundreds of companies into one searchable dashboard with application tracking.",
   openGraph: {
-    title: "Jobsekr — Every new tech job, within hours",
+    title: "Jobsekr - Every new job posting, in one place",
     description:
-      "Fresh jobs from Greenhouse, Lever, Ashby, and 11 more ATS platforms.",
+      "Fresh job postings from hundreds of companies, updated multiple times daily.",
     type: "website",
   },
   icons: {
