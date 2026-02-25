@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import FilterBar from "@/components/FilterBar";
 import JobList from "@/components/JobList";
 import DefaultFiltersLoader from "@/components/DefaultFiltersLoader";
+import LandingHero from "@/components/LandingHero";
 
 const PAGE_SIZE = 30;
 
@@ -28,7 +29,6 @@ async function fetchJobs(
     .select("*", { count: "exact" })
     .eq("is_active", true);
 
-  // Text search
   if (params.q) {
     query = query.textSearch("title", params.q, {
       type: "websearch",
@@ -36,26 +36,21 @@ async function fetchJobs(
     });
   }
 
-  // Remote filter
   if (params.remote) {
     query = query.eq("remote_type", params.remote);
   }
 
-  // ATS filter
   if (params.ats) {
     query = query.eq("ats_source", params.ats);
   }
 
-  // Location filter
   if (params.location) {
     query = query.ilike("location", `%${params.location}%`);
   }
 
-  // Sort
   const ascending = params.sort === "oldest";
   query = query.order("first_seen", { ascending });
 
-  // Offset-based pagination
   const page = Math.max(1, parseInt(params.page || "1", 10) || 1);
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
@@ -79,21 +74,38 @@ async function fetchJobs(
   };
 }
 
+async function fetchStats(): Promise<{ jobCount: number; companyCount: number; atsCount: number }> {
+  const supabase = await createSupabaseServer();
+
+  const [jobRes, companyRes] = await Promise.all([
+    supabase.from("jobs").select("id", { count: "exact", head: true }).eq("is_active", true),
+    supabase.from("companies").select("id", { count: "exact", head: true }).eq("verified", true),
+  ]);
+
+  return {
+    jobCount: jobRes.count || 0,
+    companyCount: companyRes.count || 0,
+    atsCount: 14,
+  };
+}
+
 export default async function HomePage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const { jobs, count, page, totalPages } = await fetchJobs(params);
+  const hasFilters = params.q || params.remote || params.ats || params.location || params.page;
+
+  const [{ jobs, count, page, totalPages }, stats] = await Promise.all([
+    fetchJobs(params),
+    fetchStats(),
+  ]);
 
   return (
     <div className="min-h-screen">
       <Header />
+      {!hasFilters && <LandingHero stats={stats} />}
       <FilterBar totalJobs={count} />
       <DefaultFiltersLoader />
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <JobList
-          jobs={jobs}
-          page={page}
-          totalPages={totalPages}
-        />
+        <JobList jobs={jobs} page={page} totalPages={totalPages} />
       </main>
     </div>
   );

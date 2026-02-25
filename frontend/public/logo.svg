@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="#58a6ff">
+  <!-- Magnifying glass circle -->
+  <circle cx="42" cy="42" r="28" fill="none" stroke="#58a6ff" stroke-width="7"/>
+  <!-- Magnifying glass handle -->
+  <rect x="62" y="62" width="8" height="26" rx="4" transform="rotate(-45 66 75)" fill="#58a6ff"/>
+  <!-- Lightning bolt -->
+  <polygon points="48,20 32,46 42,46 36,64 56,38 46,38" fill="#58a6ff"/>
+
+</svg>
